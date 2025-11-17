@@ -1,7 +1,7 @@
 {
   "domain": "intuis_connect",
   "name": "Intuis Connect",
-  "documentation": "https://github.com/VOTRE-USERNAME/intuis-connect-hass",
+  "documentation": "https://github.com/AFLC7/intuis-connect-hass",
   "requirements": ["aiohttp>=3.8.0"],
   "codeowners": ["@AFLC7"],
   "config_flow": true,
