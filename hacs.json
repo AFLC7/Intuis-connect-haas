@@ -1,0 +1,7 @@
+{
+  "name": "Intuis Connect",
+  "domains": ["climate"],
+  "homeassistant": "2023.1.0",
+  "iot_class": "Cloud Polling",
+  "render_readme": true
+}
