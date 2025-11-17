@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration Intuis Connect",
+        "description": "Entrer vos identifiants Intuis Connect",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter a Intuis Connect.",
+      "invalid_auth": "Mail ou mot de passe invalide",
+      "unknown": "Erreur innopinnee"
+    }
+  }
+}
