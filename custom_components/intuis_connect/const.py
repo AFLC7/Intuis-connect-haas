@@ -16,7 +16,7 @@ CLIENT_ID = "59e604948fe283fd4dc7e355"
 CLIENT_SECRET = "rAeWu8Y3YqXEPqRJ4BpFzFG98MRXpCcz"
 
 # Scan interval
-SCAN_INTERVAL_SECONDS = 300  # 5 minutes
+SCAN_INTERVAL_SECONDS = 60  # 1 minute
 
 # Default values
 DEFAULT_MIN_TEMP = 7
