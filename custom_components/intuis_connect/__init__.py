@@ -142,49 +142,73 @@ class IntuisConnectAPI:
         try:
             headers = {
                 "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/json;charset=utf-8"
             }
             
-            data = {
-                "home_id": home_id,
-                "room_id": room_id,
-                "mode": "manual",
-                "temp": temperature,
+            payload = {
+                "home": {
+                    "id": home_id,
+                    "rooms": [
+                        {
+                            "id": room_id,
+                            "therm_setpoint_mode": "manual",
+                            "therm_setpoint_temperature": temperature
+                        }
+                    ]
+                }
             }
             
             async with self.session.post(
                 f"{API_BASE_URL}{API_SETROOMTHERMPOINT}",
                 headers=headers,
-                data=data,
+                json=payload,
             ) as response:
-                return response.status == 200
+                if response.status == 200:
+                    _LOGGER.info(f"Temperature set successfully to {temperature}°C for room {room_id}")
+                    return True
+                else:
+                    response_text = await response.text()
+                    _LOGGER.error(f"Failed to set temperature. Status: {response.status}, Response: {response_text}")
+                    return False
         except Exception as err:
             _LOGGER.error("Error setting temperature: %s", err)
             return False
 
     async def set_mode(self, home_id: str, room_id: str, mode: str):
-        """Set heating mode for a room (schedule, manual, away, frostguard)."""
+        """Set heating mode for a room (schedule, manual, away, hg)."""
         if not self.token:
             await self.login()
 
         try:
             headers = {
                 "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/json;charset=utf-8"
             }
             
-            data = {
-                "home_id": home_id,
-                "room_id": room_id,
-                "mode": mode,
+            payload = {
+                "home": {
+                    "id": home_id,
+                    "rooms": [
+                        {
+                            "id": room_id,
+                            "therm_setpoint_mode": mode
+                        }
+                    ]
+                }
             }
             
             async with self.session.post(
                 f"{API_BASE_URL}{API_SETROOMTHERMPOINT}",
                 headers=headers,
-                data=data,
+                json=payload,
             ) as response:
-                return response.status == 200
+                if response.status == 200:
+                    _LOGGER.info(f"Mode set successfully to {mode} for room {room_id}")
+                    return True
+                else:
+                    response_text = await response.text()
+                    _LOGGER.error(f"Failed to set mode. Status: {response.status}, Response: {response_text}")
+                    return False
         except Exception as err:
             _LOGGER.error("Error setting mode: %s", err)
             return False
