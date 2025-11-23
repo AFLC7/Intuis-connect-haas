@@ -9,7 +9,7 @@ API_BASE_URL = "https://app.muller-intuitiv.net"
 API_LOGIN = "/oauth2/token"
 API_HOMESDATA = "/api/homesdata"
 API_HOMESTATUS = "/syncapi/v1/homestatus"
-API_SETROOMTHERMPOINT = "/syncapi/v1/setroomthermpoint"
+API_SETROOMTHERMPOINT = "/api/setroomthermpoint"
 
 # OAuth credentials (publiques de l'app Muller)
 CLIENT_ID = "59e604948fe283fd4dc7e355"
