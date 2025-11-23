@@ -134,28 +134,21 @@ class IntuisConnectAPI:
             _LOGGER.error("Error getting devices: %s", err)
             return []
 
-    async def set_temperature(self, home_id: str, room_id: str, temperature: float):
-        """Set target temperature for a room."""
+            """Set target temperature for a room."""
         if not self.token:
             await self.login()
 
         try:
             headers = {
                 "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/json;charset=utf-8"
+                "Content-Type": "application/json"
             }
             
             payload = {
-                "home": {
-                    "id": home_id,
-                    "rooms": [
-                        {
-                            "id": room_id,
-                            "therm_setpoint_mode": "manual",
-                            "therm_setpoint_temperature": temperature
-                        }
-                    ]
-                }
+                "home_id": home_id,
+                "room_id": room_id,
+                "mode": "manual",
+                "temp": temperature
             }
             
             async with self.session.post(
@@ -164,7 +157,7 @@ class IntuisConnectAPI:
                 json=payload,
             ) as response:
                 if response.status == 200:
-                    _LOGGER.info(f"Temperature set successfully to {temperature}°C for room {room_id}")
+                    _LOGGER.info(f"Temperature set to {temperature}°C for room {room_id}")
                     return True
                 else:
                     response_text = await response.text()
@@ -175,26 +168,20 @@ class IntuisConnectAPI:
             return False
 
     async def set_mode(self, home_id: str, room_id: str, mode: str):
-        """Set heating mode for a room (schedule, manual, away, hg)."""
+        """Set heating mode for a room (schedule, manual, hg, away)."""
         if not self.token:
             await self.login()
 
         try:
             headers = {
                 "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/json;charset=utf-8"
+                "Content-Type": "application/json"
             }
             
             payload = {
-                "home": {
-                    "id": home_id,
-                    "rooms": [
-                        {
-                            "id": room_id,
-                            "therm_setpoint_mode": mode
-                        }
-                    ]
-                }
+                "home_id": home_id,
+                "room_id": room_id,
+                "mode": mode
             }
             
             async with self.session.post(
@@ -203,7 +190,7 @@ class IntuisConnectAPI:
                 json=payload,
             ) as response:
                 if response.status == 200:
-                    _LOGGER.info(f"Mode set successfully to {mode} for room {room_id}")
+                    _LOGGER.info(f"Mode set to {mode} for room {room_id}")
                     return True
                 else:
                     response_text = await response.text()
@@ -212,7 +199,6 @@ class IntuisConnectAPI:
         except Exception as err:
             _LOGGER.error("Error setting mode: %s", err)
             return False
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Intuis Connect from a config entry."""
