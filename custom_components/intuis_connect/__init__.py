@@ -1,19 +1,16 @@
 """The Intuis Connect integration."""
 import logging
 import aiohttp
-import asyncio
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import Platform, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
     DOMAIN,
-    CONF_USERNAME,
-    CONF_PASSWORD,
     API_BASE_URL,
     API_LOGIN,
     API_HOMESDATA,
@@ -62,6 +59,7 @@ class IntuisConnectAPI:
                 if response.status == 200:
                     result = await response.json()
                     self.token = result.get("access_token")
+                    _LOGGER.info("Successfully logged in to Intuis Connect")
                     return True
                 else:
                     _LOGGER.error("Login failed with status %s", response.status)
@@ -134,7 +132,8 @@ class IntuisConnectAPI:
             _LOGGER.error("Error getting devices: %s", err)
             return []
 
-            """Set target temperature for a room."""
+    async def set_temperature(self, home_id: str, room_id: str, temperature: float):
+        """Set target temperature for a room."""
         if not self.token:
             await self.login()
 
@@ -151,16 +150,20 @@ class IntuisConnectAPI:
                 "temp": temperature
             }
             
+            _LOGGER.debug(f"Setting temperature to {temperature}°C for room {room_id}")
+            
             async with self.session.post(
                 f"{API_BASE_URL}{API_SETROOMTHERMPOINT}",
                 headers=headers,
                 json=payload,
             ) as response:
+                response_text = await response.text()
+                _LOGGER.debug(f"API Response: Status {response.status}, Body: {response_text}")
+                
                 if response.status == 200:
                     _LOGGER.info(f"Temperature set to {temperature}°C for room {room_id}")
                     return True
                 else:
-                    response_text = await response.text()
                     _LOGGER.error(f"Failed to set temperature. Status: {response.status}, Response: {response_text}")
                     return False
         except Exception as err:
@@ -168,7 +171,7 @@ class IntuisConnectAPI:
             return False
 
     async def set_mode(self, home_id: str, room_id: str, mode: str):
-        """Set heating mode for a room (schedule, manual, hg, away)."""
+        """Set heating mode for a room."""
         if not self.token:
             await self.login()
 
@@ -184,21 +187,26 @@ class IntuisConnectAPI:
                 "mode": mode
             }
             
+            _LOGGER.debug(f"Setting mode to {mode} for room {room_id}")
+            
             async with self.session.post(
                 f"{API_BASE_URL}{API_SETROOMTHERMPOINT}",
                 headers=headers,
                 json=payload,
             ) as response:
+                response_text = await response.text()
+                _LOGGER.debug(f"API Response: Status {response.status}, Body: {response_text}")
+                
                 if response.status == 200:
                     _LOGGER.info(f"Mode set to {mode} for room {room_id}")
                     return True
                 else:
-                    response_text = await response.text()
                     _LOGGER.error(f"Failed to set mode. Status: {response.status}, Response: {response_text}")
                     return False
         except Exception as err:
             _LOGGER.error("Error setting mode: %s", err)
             return False
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Intuis Connect from a config entry."""
